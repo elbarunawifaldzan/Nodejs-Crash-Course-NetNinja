@@ -8,7 +8,7 @@ const app = express();
 
 // connect to mongodb & listen for requests
 const dbURI =
-  "mongodb+srv://netninja:test1234@net-ninja-tuts-del96.mongodb.net/node-tuts";
+  "mongodb+srv://wifaldzan:12345@cluster0.m6iyesa.mongodb.net/?appName=Cluster0";
 
 mongoose
   .connect(dbURI, { useNewUrlParser: true, useUnifiedTopology: true })
@@ -20,6 +20,7 @@ app.set("view engine", "ejs");
 
 // middleware & static files
 app.use(express.static("public"));
+app.use(express.urlencoded({ extended: true }));
 app.use(morgan("dev"));
 app.use((req, res, next) => {
   res.locals.path = req.path;
@@ -38,6 +39,29 @@ app.get("/add-blog", (req, res) => {
     .save()
     .then((result) => {
       res.send(result);
+    })
+    .catch((err) => {
+      console.log(err);
+    });
+});
+
+app.get("/blog/:id", (req, res) => {
+  const id = req.params.id;
+  Blog.findById(id)
+    .then((result) => {
+      res.render("details", { blog: result, title: "Blog Details" });
+    })
+    .catch((err) => {
+      console.log(err);
+    });
+});
+
+app.delete("/blog/:id", (req, res) => {
+  const id = req.params.id;
+
+  Blog.findByIdAndDelete(id)
+    .then((result) => {
+      res.json({ redirect: "/blogs" });
     })
     .catch((err) => {
       console.log(err);
@@ -82,6 +106,19 @@ app.get("/blogs", (req, res) => {
     .sort({ createdAt: -1 })
     .then((result) => {
       res.render("index", { blogs: result, title: "All blogs" });
+    })
+    .catch((err) => {
+      console.log(err);
+    });
+});
+
+app.post("/blogs", (req, res) => {
+  const blog = new Blog(req.body);
+
+  blog
+    .save()
+    .then((result) => {
+      res.redirect("/blogs");
     })
     .catch((err) => {
       console.log(err);
@@ -166,11 +203,6 @@ app.get("/about", (req, res) => {
   res.render("about", { title: "About" });
 });
 
-// blog routes
-app.get("/blogs/create", (req, res) => {
-  res.render("create", { title: "Create a new blog" });
-});
-
 app.get("/blogs", (req, res) => {
   Blog.find()
     .sort({ createdAt: -1 })
@@ -180,6 +212,11 @@ app.get("/blogs", (req, res) => {
     .catch((err) => {
       console.log(err);
     });
+});
+
+// blog routes
+app.get("/blogs/create", (req, res) => {
+  res.render("create", { title: "Create a new blog" });
 });
 
 // 404 page

@@ -7,15 +7,15 @@
     <div class="create-blog content">
       <h2>Create a New Blog</h2>
       <p>This is where the blog creation form will go.</p>
-      <form>
+      <form action="/blogs" method="POST">
         <label for="title">Title:</label>
-        <input type="text" id="title" required />
+        <input type="text" id="title" name="title" required />
         <br />
         <label for="content">Snippet:</label>
-        <textarea id="content"  required></textarea>
+        <textarea id="content" name="content" required></textarea>
         <br />
         <label for="body">Body:</label>
-        <textarea id="body" required></textarea>
+        <textarea id="body" name="body" required></textarea>
         <button type="submit">Create Blog</button>
     </div>
     <%- include('./partials/footer.ejs') %>
